@@ -664,7 +664,9 @@ cd
 python3 ComfyUI/main.py
 ```
 
-This finally gets Comfy UI to launch. Go to the browser in your host machine, and you should see Comfy UI
+This finally gets Comfy UI to launch. Go to the browser in your host machine, and you should see Comfy UI.
+
+NOTE: Look at the WSL2 command line and wait until it's done loading all modules before clicking "Queue" to run a generation.
 
 ```
 To see the GUI go to: http://127.0.0.1:8188
