@@ -3904,6 +3904,12 @@ source Dreamy/bin/activate
 python main.py
 ```
 
+To deactivate the UV venv
+
+```
+deactivate
+```
+
 
 ### Comfy UI Folders
 
@@ -4230,26 +4236,70 @@ Prompt executed in 1.20 seconds
 
 The reason I went to such length to setup the portable environment as it is, is to allow backups of the FULL ComfyUI.
 
-Now the VENV has everything inside.
+Zip doesn't work, it's bricked, somehow :O
 
-Now the models are outside ComfyUI itself and the WSL machine.
-
-Meaning I can just setup a script to save differencies into a zip, and when ComfyUI bricks again, I can resurrect it by deleting and unzipping the backup in theory
+Backup point
 
 ```
-sudo apt install zip
-zip -u comfyui-backup.zip -r ComfyUI
+uv pip install -r 2025-05-17-requirements.txt
 ```
 
-Compared to the previous setup:
-- The ComfyUI folder has gone down from 350GB to 96GB
-- The compressed comfyui-backup.zip is 13GB
+Restore point
+NOTE: you need to rebuild the nodes, so it takes forever the first run of the nodes.
+
+```
+rm -rf Dreamy
+uv venv Dreamy
+source Dreamy/bin/activate
+uv pip install -r 2025-05-17-requirements.txt
+
+location=$(pip show torch | grep Location | awk -F ": " '{print $2}')
+cd ${location}/torch/lib/
+rm libhsa-runtime64.so*
+cd
+cd ComfyUI
+
+python -c 'import torch' 2> /dev/null && echo 'Success' || echo 'Failure'
+python -c 'import torch; print(torch.cuda.is_available())'
+python -c "import torch; print(f'device name [0]:', torch.cuda.get_device_name(0))"
+python -m torch.utils.collect_env
+```
+
+## STEP 6C - Safe Pip
+
+Packages really want to brick ROCm with all their willpower by overwriting torch with an incompatible version that will never work. e.g. it happened with Florence2
+
+uv let you specify a constraint file, to add some sacred blessed dependencies that takes precedence, this should stop pip from constantly bricking ROCm?
 
 
 
+if created outside WSL needs ownership from user
+```
+cd 
+cd ComfyUI
+sudo chown -R $(whoami) constraint.txt
+cat constraint.txt
+```
 
+constraint.txt
+```
+pytorch-triton-rocm @ file:///home/meridia/ComfyUI/pytorch_triton_rocm-3.0.0+rocm6.3.4.git75cc27c2-cp312-cp312-linux_x86_64.whl
+torch @ file:///home/meridia/ComfyUI/torch-2.4.0+rocm6.3.4.git7cecbf6d-cp312-cp312-linux_x86_64.whl
+torchaudio @ file:///home/meridia/ComfyUI/torchaudio-2.4.0+rocm6.3.4.git69d40773-cp312-cp312-linux_x86_64.whl
+torchvision @ file:///home/meridia/ComfyUI/torchvision-0.19.0+rocm6.3.4.gitfab84886-cp312-cp312-linux_x86_64.whl
+```
 
+manually git clone the node without installing requirements.txt, and 
 
+```
+cd
+cd ComfyUI
+git clone https://github.com/kijai/ComfyUI-Florence2.git
+cd ComfyUI-Florence2
+pip install -r requirements.txt --constraint ~meridia/ComfyUI/constraint.txt
+cd 
+cd ComfyUI
+```
 
 
 
