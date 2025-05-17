@@ -4296,7 +4296,7 @@ cd
 cd ComfyUI
 git clone https://github.com/kijai/ComfyUI-Florence2.git
 cd ComfyUI-Florence2
-pip install -r requirements.txt --constraint ~meridia/ComfyUI/constraint.txt
+uv pip install -r requirements.txt --constraint ~meridia/ComfyUI/constraint.txt
 cd 
 cd ComfyUI
 ```
