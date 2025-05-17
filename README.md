@@ -3906,6 +3906,74 @@ python main.py
 
 - ```ComfyUI\models\checkpoints``` It's where SD15, SDXL, FLux checkpoints go
 
+#### Copy workflows from host machine to WSL
+
+When copying workflows to ```ComfyUI\user\default\workflows``` you might need to update permissions, or you get the following error:
+
+```PermissionError: [Errno 13] Permission denied: '/home/meridia/ComfyUI/user/default/workflows/txt2img-flux.json'```
+
+
+Commands
+
+```
+ls -l /home/meridia/ComfyUI/user/default/workflows/
+sudo chown -R $(whoami) /home/meridia/ComfyUI/user/default/workflows/
+ls -l /home/meridia/ComfyUI/user/default/workflows/
+```
+
+<details>
+<summary>Workflow permission change logs</summary>
+
+```
+(Dreamy) meridia@TowerOfBabel:~/ComfyUI$ ls -l /home/meridia/ComfyUI/user/default/workflows/
+total 360
+-rw-rw-r-- 1 meridia meridia  4718 May 16 12:43 XXX.json
+-rw-rw-r-- 1 meridia meridia  5222 May 17 10:30 ZBUG-vae-decode-adrenaline-crash.json
+-rw-r--r-- 1 root    root    11226 May  7 19:48 img2img-background.json
+-rw-r--r-- 1 root    root    12250 Mar 15 11:05 img2img-depth-sd15.json
+-rw-r--r-- 1 root    root    20911 Mar 16 10:25 img2img-flux-caption.json
+-rw-r--r-- 1 root    root    21973 Apr 20 10:58 img2img-flux-inpaint.json
+-rw-r--r-- 1 root    root    18978 Mar 16 11:17 img2img-flux-tiled.json
+-rw-r--r-- 1 root    root    28615 May 11 11:20 img2img-flux-v2.json
+-rw-r--r-- 1 root    root    22843 May 10 13:31 img2img-hidream-dev-gguf.json
+-rw-r--r-- 1 root    root     9145 Mar 15 10:11 img2img-inpaint-sd15.json
+-rw-r--r-- 1 root    root    39500 Apr 13 14:58 img2img-outpaint-sd.json
+-rw-r--r-- 1 root    root    14637 Apr 13 11:40 img2img-outpaint-sdxl.json
+-rw-r--r-- 1 root    root    32858 May  9 14:43 img2stl-Hunyuan-background.json
+-rw-r--r-- 1 root    root     3125 Apr 13 11:41 img2txt.json
+-rw-r--r-- 1 root    root     5863 May  4 14:41 txt2audio-kokoro.json
+-rw-r--r-- 1 root    root     4059 May  4 13:54 txt2audio-whisperspeech-clone.json
+-rw-rw-r-- 1 meridia meridia  5111 May 17 11:00 txt2img-SD15-minimal.json
+-rw-r--r-- 1 root    root    24325 May 11 11:11 txt2img-flux.json
+-rw-r--r-- 1 root    root    24529 May 11 10:31 txt2img-gguf-flux.json
+-rw-r--r-- 1 root    root    22843 May 10 13:30 txt2img-hidream-dev-gguf.json
+(Dreamy) meridia@TowerOfBabel:~/ComfyUI$ sudo chown -R $(whoami) /home/meridia/ComfyUI/user/default/workflows/
+[sudo] password for meridia:
+(Dreamy) meridia@TowerOfBabel:~/ComfyUI$ ls -l /home/meridia/ComfyUI/user/default/workflows/
+total 360
+-rw-rw-r-- 1 meridia meridia  4718 May 16 12:43 XXX.json
+-rw-rw-r-- 1 meridia meridia  5222 May 17 10:30 ZBUG-vae-decode-adrenaline-crash.json
+-rw-r--r-- 1 meridia root    11226 May  7 19:48 img2img-background.json
+-rw-r--r-- 1 meridia root    12250 Mar 15 11:05 img2img-depth-sd15.json
+-rw-r--r-- 1 meridia root    20911 Mar 16 10:25 img2img-flux-caption.json
+-rw-r--r-- 1 meridia root    21973 Apr 20 10:58 img2img-flux-inpaint.json
+-rw-r--r-- 1 meridia root    18978 Mar 16 11:17 img2img-flux-tiled.json
+-rw-r--r-- 1 meridia root    28615 May 11 11:20 img2img-flux-v2.json
+-rw-r--r-- 1 meridia root    22843 May 10 13:31 img2img-hidream-dev-gguf.json
+-rw-r--r-- 1 meridia root     9145 Mar 15 10:11 img2img-inpaint-sd15.json
+-rw-r--r-- 1 meridia root    39500 Apr 13 14:58 img2img-outpaint-sd.json
+-rw-r--r-- 1 meridia root    14637 Apr 13 11:40 img2img-outpaint-sdxl.json
+-rw-r--r-- 1 meridia root    32858 May  9 14:43 img2stl-Hunyuan-background.json
+-rw-r--r-- 1 meridia root     3125 Apr 13 11:41 img2txt.json
+-rw-r--r-- 1 meridia root     5863 May  4 14:41 txt2audio-kokoro.json
+-rw-r--r-- 1 meridia root     4059 May  4 13:54 txt2audio-whisperspeech-clone.json
+-rw-rw-r-- 1 meridia meridia  5111 May 17 11:00 txt2img-SD15-minimal.json
+-rw-r--r-- 1 meridia root    24325 May 11 11:11 txt2img-flux.json
+-rw-r--r-- 1 meridia root    24529 May 11 10:31 txt2img-gguf-flux.json
+-rw-r--r-- 1 meridia root    22843 May 10 13:30 txt2img-hidream-dev-gguf.json
+```
+
+</details><br>
 
 
 ### Test ComfyuUI - First Image Generation
@@ -4145,6 +4213,13 @@ Meaning I can just setup a script to save differencies into a zip, and when Comf
 sudo apt install zip
 zip -u comfyui-backup.zip -r ComfyUI
 ```
+
+Compared to the previous setup:
+- The ComfyUI folder has gone down from 350GB to 96GB
+- The compressed comfyui-backup.zip is 13GB
+
+
+
 
 
 
