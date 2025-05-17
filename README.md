@@ -1,3 +1,8 @@
+
+#### UPDATE 2025-05-17
+
+I rebuilt WSL using python 3.12 under Ubuntu 22, using a portable python environment UV and compartimentalizing all ROCm dependencies there and rebuilt ComfyUI. This way I can backup the full environment when it bricks when trying bleeding edge models.
+
 # Abstract
 
 My objective is to run [LM Studio](https://lmstudio.ai/) and [Comfy UI](https://github.com/comfyanonymous/ComfyUI) under windows with full GPU acceleration.
@@ -3982,7 +3987,8 @@ In order to do a test, you need a model. The tutorial should open, select the ba
 
 You need to copy a SD1.5 model in the checkpoint folder, and in the dropdown select the model in the model loader node. If the drop down doesn't refresh, from the model/checkpoint GUI tab you can refresh and drag from there.
 
-The first run is very slow, the second run should accelerate properly. SD1.5 should take only a few seconds at 512x512 resolution with 20 step euler
+Have faith, Flux took 340s before it did something on my machine. The first run is very slow, the second run should accelerate properly. SD1.5 should take only a few seconds at 512x512 resolution with 20 step euler
+
 
 <details>
 <summary>Run first basic workflow</summary>
@@ -4094,6 +4100,27 @@ Rename it to ```extra_model_paths.yaml``` to activate it
 
 Inside, link to the folder in the host machine
 
+#Rename this to extra_model_paths.yaml and ComfyUI will load it
+
+```
+comfyui:
+     base_path: /mnt/f/comfyui-models
+     # You can use is_default to mark that these folders should be listed first, and used as the default dirs for eg downloads
+     #is_default: true
+     checkpoints: checkpoints/
+     clip: clip/
+     clip_vision: clip_vision/
+     text_encoders: text_encoders/
+     configs: configs/
+     controlnet: controlnet/
+     diffusion_models: |
+                  diffusion_models
+                  unet
+     embeddings: embeddings/
+     loras: loras/
+     upscale_models: upscale_models/
+     vae: vae/
+```
 
 <details>
 <summary>ComfyUI loading from host folder logs</summary>
