@@ -4241,7 +4241,7 @@ Zip doesn't work, it's bricked, somehow :O
 Backup point
 
 ```
-uv pip install -r 2025-05-17-requirements.txt
+pip freeze > 2025-05-17b-requirements.txt
 ```
 
 Restore point
