@@ -475,6 +475,141 @@ If you boot WSL up too quickly after shutdown or reboot, there might be errors
 <3>WSL (4619 - Relay) ERROR: UtilTranslatePathList:2878: Failed to translate F:\x86_64-13.2.0-release-win32-seh-msvcrt-rt_v11-rev1\bin
 ```
 
+### WSL HOST Machine folder penality
+
+I tried putting the models on the Host machine via /mnt/f/comfyui-models, but there is a catastrophic performance penality in doing so.
+
+Flux degrades from 60s to 400s, and HiDream degrades even more.
+
+Models need to be inside WSL, I redirected models to $HOME/comfy-ui models so that the models are outside the ComfyUI folder, but inside WSL
+
+```extra_model_paths.yaml```
+```
+comfyui:
+     #Models outside WSL suffer an extreme performance penality in loading
+     #base_path: /mnt/f/comfyui-models
+     
+     #Models inside WSL
+     base_path: $HOME/comfyui-models
+     # You can use is_default to mark that these folders should be listed first, and used as the default dirs for eg downloads
+     #is_default: true
+     checkpoints: checkpoints/
+     clip: clip/
+     clip_vision: clip_vision/
+     text_encoders: text_encoders/
+     configs: configs/
+     controlnet: controlnet/
+     diffusion_models: |
+                  diffusion_models
+                  unet
+     embeddings: embeddings/
+     loras: loras/
+     upscale_models: upscale_models/
+     vae: vae/
+```
+
+<details>
+<summary>Flux - models /mnt - Python 3.10 - 406s</summary>
+
+```
+got prompt
+Using split attention in VAE
+Using split attention in VAE
+VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+Requested to load FluxClipModel_
+loaded completely 9.5367431640625e+25 9319.23095703125 True
+CLIP/text encoder model load device: cuda:0, offload device: cpu, current: cuda:0, dtype: torch.float16
+clip missing: ['text_projection.weight']
+model weight dtype torch.float8_e4m3fn, manual cast: torch.bfloat16
+model_type FLUX
+Using split attention in VAE
+Using split attention in VAE
+VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+CLIP/text encoder model load device: cuda:0, offload device: cpu, current: cpu, dtype: torch.float16
+Requested to load Flux
+loaded partially 11205.649199218751 11205.642578125 0
+100%|███████████████████████████████████████████████████████████████████████████████████| 20/20 [00:40<00:00,  2.05s/it]
+Requested to load AutoencodingEngine
+0 models unloaded.
+loaded completely 3660.523046875 319.7467155456543 True
+Prompt executed in 406.13 seconds
+```
+
+</details><br>
+
+<details>
+<summary>Flux - models $HOME - Python 3.10 - 60s/40s</summary>
+
+```
+got prompt
+Using split attention in VAE
+Using split attention in VAE
+VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+Requested to load FluxClipModel_
+loaded completely 9.5367431640625e+25 9319.23095703125 True
+CLIP/text encoder model load device: cuda:0, offload device: cpu, current: cuda:0, dtype: torch.float16
+clip missing: ['text_projection.weight']
+model weight dtype torch.float8_e4m3fn, manual cast: torch.bfloat16
+model_type FLUX
+Using split attention in VAE
+Using split attention in VAE
+VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+CLIP/text encoder model load device: cuda:0, offload device: cpu, current: cpu, dtype: torch.float16
+Requested to load Flux
+loaded partially 10567.039824218751 10563.812561035156 0
+100%|███████████████████████████████████████████████████████████████████████████████████| 20/20 [00:39<00:00,  2.00s/it]
+Requested to load AutoencodingEngine
+0 models unloaded.
+loaded completely 3658.5234375 319.7467155456543 True
+Prompt executed in 60.92 seconds
+got prompt
+loaded partially 10389.160917968751 10388.998107910156 0
+100%|███████████████████████████████████████████████████████████████████████████████████| 20/20 [00:41<00:00,  2.09s/it]
+Requested to load AutoencodingEngine
+0 models unloaded.
+loaded completely 3667.255859375 319.7467155456543 True
+Prompt executed in 41.74 seconds
+```
+
+</details><br>
+
+<details>
+<summary>Flux - models $HOME - Python 3.12 - 60s/40s</summary>
+
+```
+got prompt
+Using split attention in VAE
+Using split attention in VAE
+VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+Requested to load FluxClipModel_
+loaded completely 9.5367431640625e+25 9319.23095703125 True
+CLIP/text encoder model load device: cuda:0, offload device: cpu, current: cuda:0, dtype: torch.float16
+clip missing: ['text_projection.weight']
+model weight dtype torch.float8_e4m3fn, manual cast: torch.bfloat16
+model_type FLUX
+Using split attention in VAE
+Using split attention in VAE
+VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+CLIP/text encoder model load device: cuda:0, offload device: cpu, current: cpu, dtype: torch.float16
+Requested to load Flux
+loaded partially 10354.188261718751 10354.1142578125 0
+100%|███████████████████████████████████████████████████████████████████████████████████| 20/20 [00:42<00:00,  2.10s/it]
+Requested to load AutoencodingEngine
+0 models unloaded.
+loaded completely 3654.15390625 319.7467155456543 True
+Prompt executed in 61.74 seconds
+got prompt
+loaded partially 10809.430449218751 10806.891662597656 0
+100%|███████████████████████████████████████████████████████████████████████████████████| 20/20 [00:39<00:00,  1.97s/it]
+Requested to load AutoencodingEngine
+0 models unloaded.
+loaded completely 3664.833203125 319.7467155456543 True
+Prompt executed in 40.71 seconds
+```
+
+</details><br>
+
+
 ## STEP 2 - GPU and ROCm drivers
 
 This is a critical step, installing the GPU and ROCm drivers. You need to read very cerfully the guides, because there are IF involved, and guides for Ubuntu 24 and Ubuntu 22.
