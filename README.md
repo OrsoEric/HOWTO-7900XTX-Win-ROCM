@@ -1,4 +1,16 @@
 
+### UPDATE 2025-12-08
+
+AMD has released a preview driver that supports ROCm bare under windows. Meaning with that preview driver, WSL is no longer needed. Installation is a lot simpler.
+
+Refers to this repo
+
+[ComfyUI Windows Instructions](https://github.com/OrsoEric/HOWTO-ComfyUI/tree/Master)
+
+[Here some logs as I experiment](https://github.com/OrsoEric/HOWTO-ComfyUI/blob/Master/logs/2025-12-08%20Trying%20ROCm%20Windows.md)
+
+# DEPRECATED
+
 #### UPDATE 2025-05-17
 
 I rebuilt WSL using python 3.12 under Ubuntu 22, using a portable python environment UV and compartimentalizing all ROCm dependencies there and rebuilt ComfyUI. This way I can backup the full environment when it bricks when trying bleeding edge models.
